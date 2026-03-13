@@ -8,10 +8,19 @@ import Onboarding1 from "./Onboarding1";
 import Onboarding2 from "./Onboarding2";
 import Onboarding3 from "./Onboarding3";
 import Onboarding4 from "./Onboarding4";
-
+import Signin from "./Signin";
+import Register from "./Register";
 import OtpScreen from "./OtpScreen";
 import PhoneScreen from "./PhoneScreen";
 import HomeScreen from "./HomeScreen";
+import Home from "./Home";
+
+import Paying from "./Paying";
+import PaymentDetails from "./PaymentDetails";
+import SendMoney from "./SendMoney";
+import Success from "./Success";
+import Wallet from "./Wallet";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +36,16 @@ export default function Index() {
         <Stack.Screen name="Onboard4" component={Onboarding4} />
         <Stack.Screen name="OTP" component={OtpScreen} />
         <Stack.Screen name="Phone" component={PhoneScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="Signin" component={Signin} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Home" component={Home} />
+       
+        <Stack.Screen name="Paying" component={Paying} />
+        <Stack.Screen name="PaymentDetails" component={PaymentDetails} />
+        <Stack.Screen name="SendMoney" component={SendMoney} />
+         <Stack.Screen name="Success" component={Success} />
+          <Stack.Screen name="Wallet" component={Wallet} />
       </Stack.Navigator>
     </AppFontLoader>
   );
