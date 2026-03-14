@@ -22,6 +22,11 @@ import Success from "./Success";
 import Wallet from "./Wallet";
 import Profile from "./Profile";
 import Sidebar from "./Sidebar";
+import BuyAirtime from "./BuyAirtime";
+import BuyData from "./BuyData";
+import ForeignCoin from "./ForeignCoin";
+import More from "./More";
+import PayBill from "./PayBill";
 
 
 const Stack = createNativeStackNavigator();
@@ -50,6 +55,12 @@ export default function Index() {
           <Stack.Screen name="Wallet" component={Wallet} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Sidebar" component={Sidebar} />
+          <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
+         <Stack.Screen name="BuyData" component={BuyData} />
+          <Stack.Screen name="ForeignCoin" component={ForeignCoin} />
+          <Stack.Screen name="More" component={More} />
+          <Stack.Screen name="PayBill" component={PayBill} />
+          
       </Stack.Navigator>
     </AppFontLoader>
   );

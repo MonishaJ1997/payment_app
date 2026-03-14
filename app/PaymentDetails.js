@@ -37,9 +37,7 @@ export default function PaymentDetails() {
             <Ionicons name="wallet" size={26} color="#0F2A44" />
           </TouchableOpacity>
 
-          <TouchableOpacity >
-            <MaterialIcons name="credit-card" size={26} color="#0F2A44" />
-          </TouchableOpacity>
+          
 
           <TouchableOpacity onPress={() => router.push("/Profile")}>
             <Ionicons name="person-circle" size={26} color="#0F2A44" />
