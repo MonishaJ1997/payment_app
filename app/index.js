@@ -20,6 +20,8 @@ import PaymentDetails from "./PaymentDetails";
 import SendMoney from "./SendMoney";
 import Success from "./Success";
 import Wallet from "./Wallet";
+import Profile from "./Profile";
+import Sidebar from "./Sidebar";
 
 
 const Stack = createNativeStackNavigator();
@@ -46,6 +48,8 @@ export default function Index() {
         <Stack.Screen name="SendMoney" component={SendMoney} />
          <Stack.Screen name="Success" component={Success} />
           <Stack.Screen name="Wallet" component={Wallet} />
+          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="Sidebar" component={Sidebar} />
       </Stack.Navigator>
     </AppFontLoader>
   );
