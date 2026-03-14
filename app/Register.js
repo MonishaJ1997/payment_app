@@ -1,61 +1,74 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet
+} from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MobileWrapper from "./MobileWrapper";
 
 export default function Register() {
+
   const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const [name,setName] = useState("");
+  const [email,setEmail] = useState("");
+  const [phone,setPhone] = useState("");
+  const [password,setPassword] = useState("");
 
   const handleRegister = async () => {
-    if (!name || !email || !phone || !password) {
-      Alert.alert("Error", "Please fill all fields");
+
+    if(!name || !email || !phone || !password){
+      alert("Please fill all fields");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Error", "Enter valid email");
+
+    if(!emailRegex.test(email)){
+      alert("Enter valid email");
       return;
     }
 
-    if (phone.length !== 10) {
-      Alert.alert("Error", "Enter valid 10-digit mobile number");
+    if(phone.length !== 10){
+      alert("Enter valid mobile number");
       return;
     }
 
-    try {
-      // Fetch existing users
-      const storedUsers = await AsyncStorage.getItem("users");
-      const users = storedUsers ? JSON.parse(storedUsers) : [];
+    // Generate OTP
+    const otp = Math.floor(1000 + Math.random() * 9000);
 
-      // Check if email already exists
-      if (users.find((u) => u.email === email)) {
-        Alert.alert("Error", "Email already registered. Please login.");
-        return;
+    // Popup OTP (works on laptop and mobile)
+    alert("Your OTP is " + otp);
+
+    const user = {
+      name,
+      email,
+      phone,
+      password
+    };
+
+    await AsyncStorage.setItem("tempUser", JSON.stringify(user));
+
+    router.push({
+      pathname:"/OtpScreen",
+      params:{
+        otp: otp,
+        phone: phone
       }
+    });
 
-      const newUser = { name, email, phone, password };
-
-      users.push(newUser);
-      await AsyncStorage.setItem("users", JSON.stringify(users));
-
-      Alert.alert("Success", "Registration successful! You can now login.");
-      router.replace("/Signin");
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Error", "Something went wrong");
-    }
   };
 
-  return (
+  return(
+
     <MobileWrapper>
+
       <View style={styles.container}>
+
         <Text style={styles.heading}>Create Account</Text>
 
         <TextInput
@@ -64,6 +77,7 @@ export default function Register() {
           value={name}
           onChangeText={setName}
         />
+
         <TextInput
           placeholder="Email"
           style={styles.input}
@@ -71,34 +85,70 @@ export default function Register() {
           onChangeText={setEmail}
           keyboardType="email-address"
         />
+
         <TextInput
           placeholder="Mobile Number"
+          keyboardType="phone-pad"
           style={styles.input}
           value={phone}
           onChangeText={setPhone}
-          keyboardType="phone-pad"
           maxLength={10}
         />
+
         <TextInput
           placeholder="Password"
+          secureTextEntry
           style={styles.input}
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
         />
 
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
+
       </View>
+
     </MobileWrapper>
+
   );
+
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 25, justifyContent: "center" },
-  heading: { fontSize: 22, fontWeight: "bold", textAlign: "center", color: "#0F2A44", marginBottom: 25 },
-  input: { backgroundColor: "#EDE7E7", padding: 14, borderRadius: 6, marginBottom: 15 },
-  button: { backgroundColor: "#0F2A44", padding: 15, borderRadius: 6, alignItems: "center" },
-  buttonText: { color: "#fff", fontSize: 16 },
+
+container:{
+flex:1,
+backgroundColor:"#FFF",
+justifyContent:"center",
+padding:25
+},
+
+heading:{
+fontSize:22,
+textAlign:"center",
+marginBottom:25,
+color:"#0F2A44",
+fontWeight:"bold"
+},
+
+input:{
+backgroundColor:"#EDE7E7",
+padding:14,
+borderRadius:6,
+marginBottom:15
+},
+
+button:{
+backgroundColor:"#0F2A44",
+padding:15,
+borderRadius:6,
+alignItems:"center"
+},
+
+buttonText:{
+color:"#FFF",
+fontSize:16
+}
+
 });

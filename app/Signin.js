@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Alert
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -24,19 +24,21 @@ export default function Signin() {
     }
 
     try {
-      // Fetch all registered users
+      // Get all registered users
       const storedUsers = await AsyncStorage.getItem("users");
       const users = storedUsers ? JSON.parse(storedUsers) : [];
 
-      // Find user with matching email and password
-      const user = users.find(u => u.email === email && u.password === password);
+      // Find matching user
+      const matchedUser = users.find(
+        (u) => u.email === email && u.password === password
+      );
 
-      if (user) {
-        // Save logged-in user email
-        await AsyncStorage.setItem("loggedInUser", user.email);
+      if (matchedUser) {
+        // ✅ Save logged-in user locally
+        await AsyncStorage.setItem("currentUser", JSON.stringify(matchedUser));
 
-        Alert.alert("Login Successful", `Welcome, ${user.name}!`);
-        router.replace("/HomeScreen");
+        Alert.alert("Login Successful", `Welcome, ${matchedUser.name}!`);
+        router.replace("/HomeScreen"); // Redirect to Profile page
       } else {
         Alert.alert("Login Failed", "Incorrect email or password");
       }
@@ -52,11 +54,11 @@ export default function Signin() {
         <Text style={styles.heading}>Sign in</Text>
 
         <Text style={styles.subText}>
-          To sign in to an account in the application,
-          enter your email and password
+          To sign in to an account in the application, enter your email and
+          password
         </Text>
 
-        {/* Email */}
+        {/* Email Input */}
         <TextInput
           placeholder="E-mail"
           style={styles.input}
@@ -65,7 +67,7 @@ export default function Signin() {
           keyboardType="email-address"
         />
 
-        {/* Password */}
+        {/* Password Input */}
         <TextInput
           placeholder="Password"
           secureTextEntry
@@ -79,16 +81,13 @@ export default function Signin() {
           <Text style={styles.forgot}>Forgot password?</Text>
         </TouchableOpacity>
 
-        {/* Continue */}
+        {/* Continue Button */}
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
 
         {/* Create account */}
-        <Text style={styles.accountText}>
-          Don't have an account yet?
-        </Text>
-
+        <Text style={styles.accountText}>Don't have an account yet?</Text>
         <TouchableOpacity
           style={styles.createButton}
           onPress={() => router.push("/Register")}
@@ -96,7 +95,7 @@ export default function Signin() {
           <Text style={styles.createText}>Create an account</Text>
         </TouchableOpacity>
 
-        {/* Apple login */}
+        {/* Apple Login */}
         <TouchableOpacity style={styles.socialButton}>
           <Image
             source={require("../assets/images/apple.png")}
@@ -105,7 +104,7 @@ export default function Signin() {
           <Text style={styles.socialText}>Sign in with Apple</Text>
         </TouchableOpacity>
 
-        {/* Google login */}
+        {/* Google Login */}
         <TouchableOpacity style={styles.socialButton}>
           <Image
             source={require("../assets/images/google.png")}
@@ -116,8 +115,8 @@ export default function Signin() {
 
         {/* Footer */}
         <Text style={styles.footer}>
-          By clicking "Continue", I have read and agree with the
-          Term Sheet, Privacy Policy
+          By clicking "Continue", I have read and agree with the Term Sheet,
+          Privacy Policy
         </Text>
       </View>
     </MobileWrapper>
@@ -129,55 +128,55 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
     padding: 25,
-    justifyContent: "center"
+    justifyContent: "center",
   },
   heading: {
     fontSize: 22,
     color: "#0F2A44",
     textAlign: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
   subText: {
     textAlign: "center",
     fontSize: 14,
     marginBottom: 25,
-    color: "#333"
+    color: "#333",
   },
   input: {
     backgroundColor: "#EDE7E7",
     padding: 14,
     borderRadius: 5,
-    marginBottom: 12
+    marginBottom: 12,
   },
   forgot: {
     textAlign: "right",
     marginBottom: 20,
-    color: "#0F2A44"
+    color: "#0F2A44",
   },
   button: {
     backgroundColor: "#0F2A44",
     padding: 15,
     borderRadius: 6,
     alignItems: "center",
-    marginBottom: 25
+    marginBottom: 25,
   },
   buttonText: {
     color: "#FFF",
-    fontSize: 16
+    fontSize: 16,
   },
   accountText: {
     textAlign: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
   createButton: {
     backgroundColor: "#EDE7E7",
     padding: 15,
     alignItems: "center",
     borderRadius: 6,
-    marginBottom: 20
+    marginBottom: 20,
   },
   createText: {
-    color: "#0F2A44"
+    color: "#0F2A44",
   },
   socialButton: {
     flexDirection: "row",
@@ -186,19 +185,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#EDE7E7",
     padding: 15,
     borderRadius: 6,
-    marginBottom: 10
+    marginBottom: 10,
   },
   socialText: {
-    marginLeft: 10
+    marginLeft: 10,
   },
   icon: {
     width: 20,
-    height: 20
+    height: 20,
   },
   footer: {
     fontSize: 12,
     marginTop: 20,
     textAlign: "center",
-    color: "#555"
-  }
+    color: "#555",
+  },
 });

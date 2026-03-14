@@ -1,82 +1,97 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import MobileWrapper from "./MobileWrapper";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 export default function Profile() {
-  const router = useRouter();
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const loggedInEmail = await AsyncStorage.getItem("loggedInUser");
-        if (!loggedInEmail) {
-          router.replace("/Signin");
-          return;
-        }
-
-        const storedUsers = await AsyncStorage.getItem("users");
-        const users = storedUsers ? JSON.parse(storedUsers) : [];
-        const currentUser = users.find((u) => u.email === loggedInEmail);
-
-        if (!currentUser) {
-          router.replace("/Signin");
-          return;
-        }
-
-        setUser(currentUser);
+        const storedUser = await AsyncStorage.getItem("currentUser");
+        if (storedUser) setUser(JSON.parse(storedUser));
       } catch (error) {
-        console.log(error);
+        console.log("Error fetching user:", error);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchUser();
   }, []);
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem("loggedInUser");
+    await AsyncStorage.removeItem("currentUser");
     router.replace("/Signin");
   };
 
-  if (!user) return null;
+  if (loading) {
+    return (
+      <MobileWrapper>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color="#0F2A44" />
+        </View>
+      </MobileWrapper>
+    );
+  }
+
+  if (!user) {
+    return (
+      <MobileWrapper>
+        <View style={styles.center}>
+          <Text style={styles.message}>Please sign in to view your profile.</Text>
+          <TouchableOpacity onPress={() => router.replace("/Signin")}>
+            <Text style={styles.signInText}>Go to Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </MobileWrapper>
+    );
+  }
+
+  // First letter for avatar
+  const avatarLetter = user.name ? user.name[0].toUpperCase() : "?";
 
   return (
     <MobileWrapper>
       <View style={styles.container}>
-        <Text style={styles.heading}>My Profile</Text>
-
+        {/* Avatar */}
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{user.name.charAt(0).toUpperCase()}</Text>
+          <Text style={styles.avatarText}>{avatarLetter}</Text>
         </View>
 
-        <View style={styles.infoCard}>
-          <Text style={styles.label}>Full Name</Text>
-          <Text style={styles.value}>{user.name}</Text>
+        <Text style={styles.title}>{user.name}</Text>
+        <Text style={styles.email}>{user.email}</Text>
 
-          <Text style={styles.label}>Email</Text>
-          <Text style={styles.value}>{user.email}</Text>
-
-          <Text style={styles.label}>Mobile Number</Text>
-          <Text style={styles.value}>{user.phone}</Text>
-        </View>
-
-        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
 
+        {/* Bottom Navigation */}
         <View style={styles.bottomNav}>
-          <TouchableOpacity onPress={() => router.push("/HomeScreen")}>
+          <TouchableOpacity onPress={() => router.replace("/HomeScreen")}>
             <Ionicons name="home" size={26} color="#0F2A44" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/Wallet")}>
+
+          <TouchableOpacity onPress={() => router.replace("/Wallet")}>
             <Ionicons name="wallet" size={26} color="#0F2A44" />
           </TouchableOpacity>
+
           <TouchableOpacity>
             <MaterialIcons name="credit-card" size={26} color="#0F2A44" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/Profile")}>
+
+          <TouchableOpacity onPress={() => router.replace("/Profile")}>
             <Ionicons name="person-circle" size={26} color="#0F2A44" />
           </TouchableOpacity>
         </View>
@@ -86,14 +101,52 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 25, backgroundColor: "#F5F5F5", paddingBottom: 100, alignItems: "center" },
-  heading: { fontSize: 24, fontWeight: "700", color: "#0F2A44", marginBottom: 20 },
-  avatar: { width: 100, height: 100, borderRadius: 50, backgroundColor: "#4A90E2", justifyContent: "center", alignItems: "center", marginBottom: 20 },
-  avatarText: { color: "#fff", fontSize: 40, fontWeight: "bold" },
-  infoCard: { width: "100%", backgroundColor: "#fff", padding: 20, borderRadius: 16, elevation: 5, marginBottom: 30 },
-  label: { fontSize: 14, color: "#888", marginTop: 10 },
-  value: { fontSize: 18, fontWeight: "600", color: "#0F2A44", marginBottom: 5 },
-  logoutBtn: { backgroundColor: "#0F2A44", padding: 15, borderRadius: 10, alignItems: "center", width: "100%", marginBottom: 20 },
-  logoutText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
-  bottomNav: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "#fff", flexDirection: "row", justifyContent: "space-around", paddingVertical: 15, borderTopWidth: 1, borderColor: "#eee" },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 25,
+    backgroundColor: "#fff",
+  },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#3B82F6",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  avatarText: { color: "#fff", fontSize: 36, fontWeight: "bold" },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 5 },
+  email: { fontSize: 16, color: "#555", marginBottom: 20 },
+  logoutButton: {
+    marginTop: 20,
+    backgroundColor: "#0F2A44",
+    padding: 12,
+    borderRadius: 6,
+    width: "60%",
+    alignItems: "center",
+  },
+  logoutText: { color: "#FFF", fontSize: 16 },
+  message: { fontSize: 16, color: "#555", textAlign: "center", marginBottom: 10 },
+  signInText: {
+    marginTop: 10,
+    color: "#0F2A44",
+    textDecorationLine: "underline",
+    fontSize: 16,
+  },
+  bottomNav: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderColor: "#eee",
+  },
 });
