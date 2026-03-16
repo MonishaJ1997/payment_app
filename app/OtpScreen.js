@@ -38,7 +38,7 @@ export default function OtpScreen() {
         Alert.alert("Success", "OTP Verified & Account Created");
 
         // Navigate to Signin
-        router.replace("/Signin");
+        router.replace("/HomeScreen");
       } catch (error) {
         console.log(error);
         Alert.alert("Error", "Something went wrong");
